@@ -1,4 +1,5 @@
 // use std::env::temp_dir;
+use std::fs;
 use std::path::PathBuf;
 use tauri::{
   api::path::{home_dir, resource_dir},
@@ -31,7 +32,11 @@ pub fn app_home_dir() -> PathBuf {
   // }
 
   // #[cfg(not(target_os = "windows"))]
-  dunce::canonicalize(home_dir().unwrap().join(".config").join(APP_DIR)).unwrap()
+  let home_dir = home_dir().unwrap().join(".config").join(APP_DIR);
+  if !home_dir.exists() {
+    fs::create_dir_all(&home_dir).unwrap();
+  }
+  dunce::canonicalize(home_dir).unwrap()
 }
 
 /// get the resources dir
